@@ -1,7 +1,7 @@
 // 1. API
 const BASE_URL = 'https://lighthouse-user-api.herokuapp.com'
 const INDEX_URL = BASE_URL + '/api/v1/users/'
-const USER_PER_PAGE = 40
+const USER_PER_PAGE = 30
 
 // 2.1 抓必要element
 const dataPanel = document.querySelector('#data-panel')
@@ -9,69 +9,67 @@ const like = document.querySelector('#btn-like')
 const searchForm = document.querySelector('#search-form')
 const searchInput = document.querySelector('#search-input')
 const paginator = document.querySelector('#paginator')
+const modeBox = document.querySelector('#btn-mode-box')
+const btnCard = document.querySelector('#btn-mode-card')
+const btnList = document.querySelector('#btn-mode-list')
 
 
 // 2.2 變數 set arr for user data
 const users = []
 const localList = JSON.parse(localStorage.getItem('favorite-users')) || []
 let filteredUsers = []
+let mode = 'card'
+let currentPage = 1
 
 
-// 3.1 render user card 同時判斷是否已加入收藏 function
-function renderUserList(data) {
+// 3.1 render user 同時判斷是否已加入收藏 function
+function renderUsers(data, modeVar) {
   let rawHTML = ''
-  data.forEach(function favoriteOrNot(item) {
-    if (localList.some(localUser => localUser.id === item.id)) {
+  if (modeVar === 'card') {
+    dataPanel.className = 'row row-cols-xl-5  row-cols-lg-4 row-cols-md-3 row-cols-2 no-gutters'
+    data.forEach((item) => {
       rawHTML += `
       <div class="mb-3 px-2">
         <div class="card border-0 ">
           <div class="card-img-box rounded">
             <img src="${item.avatar}" class="card-img-top " alt="avatar">
-            <div class="overlay" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
+            <div class="overlay modal-trigger" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
               ${item.name} ${item.surname}
             </div>
-            <i class="far fa-heart like-style like-active fas" id='btn-like' data-id="${item.id}"></i>
+            <i class="far fa-heart card-heart btn-heart" data-id="${item.id}"></i>
           </div>
         </div>
       </div>
-    `
-    } else {
+      `
+      btnCard.classList.add('btn-mode-on')//btn變色
+    })
+  } else if (modeVar === 'list') {
+    dataPanel.className = 'row no-gutters'
+    data.forEach((item) => {
       rawHTML += `
-      <div class="mb-3 px-2">
-        <div class="card border-0 ">
-          <div class="card-img-box rounded">
-            <img src="${item.avatar}" class="card-img-top " alt="avatar">
-            <div class="overlay" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
-              ${item.name} ${item.surname}
+        <div class="col-xl-4 col-md-6 mb-2">
+          <div class="px-3 mx-1  list-box">
+            <div class="list-frame modal-trigger" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
+              <img src="${item.avatar}" alt="avatar" class="rounded-circle list-img modal-trigger" data-id="${item.id}">
+              <span class="list-name modal-trigger" data-id="${item.id}">${item.name} ${item.surname}</span>
             </div>
-            <i class="far fa-heart like-style" id='btn-like' data-id="${item.id}"></i>
+            <i class="far fa-heart list-heart btn-heart" data-id="${item.id}"></i>
           </div>
         </div>
-      </div>
-    `
+      `
+      btnList.classList.add('btn-mode-on')//btn變色
+    })
+  }
+  dataPanel.innerHTML = rawHTML // render data panel
+  // detect favorite list render heart icon
+  const heartList = document.querySelectorAll('.btn-heart')
+  heartList.forEach(function favoriteOrNot(item) {
+    if (localList.some(favoriteUser => favoriteUser.id === Number(item.dataset.id))) {
+      item.className.add('active-heart', 'fas')
     }
   })
-  dataPanel.innerHTML = rawHTML
 }
-// function renderUserList(data) {
-//   let rawHTML = ''
-//   data.forEach((item) => {
-//     rawHTML += `
-//       <div class="mb-3 px-2">
-//         <div class="card border-0 ">
-//           <div class="card-img-box rounded">
-//             <img src="${item.avatar}" class="card-img-top " alt="avatar">
-//             <div class="overlay" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
-//               ${item.name} ${item.surname}
-//             </div>
-//             <i class="far fa-heart like-style" id='btn-like' data-id="${item.id}"></i>
-//           </div>
-//         </div>
-//       </div>
-//     `
-//   })
-//   dataPanel.innerHTML = rawHTML
-// }
+
 
 
 // 3.2 start 呼叫API 放入user cards
@@ -80,7 +78,7 @@ axios
   .then((response) => {
     users.push(...response.data.results)
     renderPaginator(users.length)
-    renderUserList(getArrByPage(1))
+    renderUsers(getArrByPage(currentPage), mode)
   })
   .catch((err) => console.log(err))
 
@@ -108,7 +106,7 @@ function showUserModal(id) {
 
 }
 
-// 4.2 監聽事件 點擊card出現modal
+// 4.2 event 點擊card出現modal
 
 dataPanel.addEventListener('click', function onPanelClick(event) {
   if (event.target.matches('.overlay')) {
@@ -143,41 +141,8 @@ function removeFavorite(id) {
   localStorage.setItem('favorite-users', JSON.stringify(localList))
 }
 
-// 5.3 是否在收藏清單
-// function favoriteOrNot(id) {
-//   if (localList.some(localUser => localUser.id === id)) {
-//     rawHTML += `
-//       <div class="mb-3 px-2">
-//         <div class="card border-0 ">
-//           <div class="card-img-box rounded">
-//             <img src="${item.avatar}" class="card-img-top " alt="avatar">
-//             <div class="overlay" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
-//               ${item.name} ${item.surname}
-//             </div>
-//             <i class="far fa-heart like-style like-active" id='btn-like' data-id="${item.id}"></i>
-//           </div>
-//         </div>
-//       </div>
-//     `
-//   } else {
-//     rawHTML += `
-//       <div class="mb-3 px-2">
-//         <div class="card border-0 ">
-//           <div class="card-img-box rounded">
-//             <img src="${item.avatar}" class="card-img-top " alt="avatar">
-//             <div class="overlay" data-toggle="modal" data-target="#user-modal" data-id="${item.id}">
-//               ${item.name} ${item.surname}
-//             </div>
-//             <i class="far fa-heart like-style" id='btn-like' data-id="${item.id}"></i>
-//           </div>
-//         </div>
-//       </div>
-//     `
-//   }
 
-// }
-
-// 6.1 search 功能
+// 6.1 event search 功能
 searchForm.addEventListener('submit', function searchSubmit(event) {
   event.preventDefault()
   const keyword = searchInput.value.trim().toLowerCase()
@@ -188,13 +153,14 @@ searchForm.addEventListener('submit', function searchSubmit(event) {
   if (filteredUsers.length === 0) {
     return alert('未找到符合資料')
   }
+  currentPage = 1
   renderPaginator(filteredUsers.length)
-  renderUserList(getArrByPage(1))
+  renderUsers(getArrByPage(currentPage), mode)
 
 })
 
 
-// 7.1 分頁功能 render 頁數 計算總共需要幾頁
+// 7.1 function 分頁功能 render 頁數 計算總共需要幾頁
 function renderPaginator(amount) {
   const numbersOfPages = Math.ceil(amount / USER_PER_PAGE)
   let rawHTML = ''
@@ -208,24 +174,33 @@ function renderPaginator(amount) {
   paginator.firstElementChild.classList.add('active')
 }
 
-// 7.2 分頁功能 得到每頁指定個數的arr 傳回renderUsers
+// 7.2 function 分頁功能 得到每頁指定個數的arr 傳回renderUsers
 function getArrByPage(page) {
   const data = filteredUsers.length ? filteredUsers : users
   const starIndex = (page - 1) * USER_PER_PAGE
   return data.slice(starIndex, starIndex + USER_PER_PAGE)
 }
 
-// 7.3 分頁功能 下一頁
+// 7.3 event 分頁功能 下一頁 
 paginator.addEventListener('click', function onClickPaginator(event) {
   if (event.target.tagName !== 'A') return
-  const page = Number(event.target.dataset.page)
+  currentPage = Number(event.target.dataset.page)
+
   const pageList = document.querySelectorAll('.page-item')
-  console.log(page)
-  console.log('pageList', pageList)
-  console.log(event.target.parentNode)
   pageList.forEach((pageItem) => {
     pageItem.classList.remove('active')
   })
   event.target.parentNode.classList.add('active')
-  renderUserList(getArrByPage(page))
+
+  renderUsers(getArrByPage(currentPage), mode)
+})
+
+// 8.1 event 切換顯示模式
+modeBox.addEventListener('click', function changeMode(event) {
+  if (event.target.tagName !== 'I') return
+  const data = filteredUsers.length ? filteredUsers : users
+  mode = event.target === btnCard ? 'card' : 'list'
+  btnCard.classList.remove('btn-mode-on')
+  btnList.classList.remove('btn-mode-on')
+  renderUsers(getArrByPage(currentPage), mode)
 })
