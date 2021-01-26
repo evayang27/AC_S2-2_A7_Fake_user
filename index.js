@@ -63,7 +63,7 @@ function renderUsers(data, modeVar) {
   const heartList = document.querySelectorAll('.btn-heart')
   heartList.forEach(function favoriteOrNot(item) {
     if (localList.some(favoriteUser => favoriteUser.id === Number(item.dataset.id))) {
-      item.className.add('active-heart', 'fas')
+      item.classList.add('active-heart', 'fas')
     }
   })
 }
@@ -95,18 +95,29 @@ function showUserModal(id) {
           <span> <i class="fa fa-birthday-cake mr-1" aria-hidden="true"></i>
             ${result.birthday}</span> 
       `
+      // 判斷target是否在收藏清單 heart 要變外觀
+      if (localList.some(favoriteUser => favoriteUser.id === Number(id))) {
+        userProfile.innerHTML += `
+        <i class="far fa-heart modal-heart active-heart fas" data-id='${id}'></i>
+        `
+      } else {
+        userProfile.innerHTML += `
+          <i class="far fa-heart modal-heart" data-id='${id}'></i>
+        `
+      }
     })
 }
+
 // 4.2 event click card or list show modal
 dataPanel.addEventListener('click', function onPanelClick(event) {
   if (event.target.matches('.modal-trigger')) {
     showUserModal(event.target.dataset.id)
-  } else if (event.target.matches('.like-active')) {
-    event.target.classList.toggle('like-active')
+  } else if (event.target.matches('.active-heart')) {
+    event.target.classList.toggle('active-heart')
     event.target.classList.toggle('fas')
     removeFavorite(Number(event.target.dataset.id))
-  } else if (event.target.matches('.like-style')) {
-    event.target.classList.toggle('like-active')
+  } else if (event.target.matches('.btn-heart')) {
+    event.target.classList.toggle('active-heart')
     event.target.classList.toggle('fas')
     addToFavorite(Number(event.target.dataset.id))
   }
