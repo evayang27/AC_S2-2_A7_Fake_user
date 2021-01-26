@@ -13,7 +13,6 @@ const modeBox = document.querySelector('#btn-mode-box')
 const btnCard = document.querySelector('#btn-mode-card')
 const btnList = document.querySelector('#btn-mode-list')
 
-
 // 2.2 變數 set arr for user data
 const users = []
 const localList = JSON.parse(localStorage.getItem('favorite-users')) || []
@@ -21,8 +20,7 @@ let filteredUsers = []
 let mode = 'card'
 let currentPage = 1
 
-
-// 3.1 render user 同時判斷是否已加入收藏 function
+// 3.1 function render user 同時判斷是否已加入收藏
 function renderUsers(data, modeVar) {
   let rawHTML = ''
   if (modeVar === 'card') {
@@ -69,9 +67,6 @@ function renderUsers(data, modeVar) {
     }
   })
 }
-
-
-
 // 3.2 start 呼叫API 放入user cards
 axios
   .get(INDEX_URL)
@@ -82,9 +77,7 @@ axios
   })
   .catch((err) => console.log(err))
 
-
-
-// 4.1 show modal function
+// 4.1 function show modal 
 function showUserModal(id) {
   const userImage = document.querySelector('#user-modal-img')
   const userProfile = document.querySelector('#user-modal-text')
@@ -104,12 +97,9 @@ function showUserModal(id) {
       `
     })
 }
-
-// 4.2 event 點擊card出現modal
-
+// 4.2 event click card or list show modal
 dataPanel.addEventListener('click', function onPanelClick(event) {
-  if (event.target.matches('.overlay')) {
-    // console.log(event.target.dataset.id)
+  if (event.target.matches('.modal-trigger')) {
     showUserModal(event.target.dataset.id)
   } else if (event.target.matches('.like-active')) {
     event.target.classList.toggle('like-active')
@@ -120,9 +110,7 @@ dataPanel.addEventListener('click', function onPanelClick(event) {
     event.target.classList.toggle('fas')
     addToFavorite(Number(event.target.dataset.id))
   }
-
 })
-
 
 // 5.1 新增收藏清單 function
 function addToFavorite(id) {
@@ -132,14 +120,12 @@ function addToFavorite(id) {
   localStorage.setItem('favorite-users', JSON.stringify(localList))
   // console.log(localStorage.getItem('favorite-users'))
 }
-
 // 5.2 移除收藏清單 function
 function removeFavorite(id) {
   const removeIndex = localList.findIndex(localUser => localUser.id === id)
   localList.splice(removeIndex, 1)
   localStorage.setItem('favorite-users', JSON.stringify(localList))
 }
-
 
 // 6.1 event search 功能
 searchForm.addEventListener('submit', function searchSubmit(event) {
@@ -155,9 +141,7 @@ searchForm.addEventListener('submit', function searchSubmit(event) {
   currentPage = 1
   renderPaginator(filteredUsers.length)
   renderUsers(getArrByPage(currentPage), mode)
-
 })
-
 
 // 7.1 function 分頁功能 render 頁數 計算總共需要幾頁
 function renderPaginator(amount) {
@@ -172,14 +156,12 @@ function renderPaginator(amount) {
   paginator.innerHTML = rawHTML
   paginator.firstElementChild.classList.add('active')
 }
-
 // 7.2 function 分頁功能 得到每頁指定個數的arr 傳回renderUsers
 function getArrByPage(page) {
   const data = filteredUsers.length ? filteredUsers : users
   const starIndex = (page - 1) * USER_PER_PAGE
   return data.slice(starIndex, starIndex + USER_PER_PAGE)
 }
-
 // 7.3 event 分頁功能 下一頁 
 paginator.addEventListener('click', function onClickPaginator(event) {
   if (event.target.tagName !== 'A') return
