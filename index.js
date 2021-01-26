@@ -12,6 +12,7 @@ const paginator = document.querySelector('#paginator')
 const modeBox = document.querySelector('#btn-mode-box')
 const btnCard = document.querySelector('#btn-mode-card')
 const btnList = document.querySelector('#btn-mode-list')
+const userModal = document.querySelector('#user-modal')
 
 // 2.2 變數 set arr for user data
 const users = []
@@ -19,6 +20,7 @@ const localList = JSON.parse(localStorage.getItem('favorite-users')) || []
 let filteredUsers = []
 let mode = 'card'
 let currentPage = 1
+let heartList
 
 // 3.1 function render user 同時判斷是否已加入收藏
 function renderUsers(data, modeVar) {
@@ -60,7 +62,7 @@ function renderUsers(data, modeVar) {
   }
   dataPanel.innerHTML = rawHTML // render data panel
   // detect favorite list render heart icon
-  const heartList = document.querySelectorAll('.btn-heart')
+  heartList = document.querySelectorAll('.btn-heart')
   heartList.forEach(function favoriteOrNot(item) {
     if (localList.some(favoriteUser => favoriteUser.id === Number(item.dataset.id))) {
       item.classList.add('active-heart', 'fas')
@@ -98,11 +100,11 @@ function showUserModal(id) {
       // 判斷target是否在收藏清單 heart 要變外觀
       if (localList.some(favoriteUser => favoriteUser.id === Number(id))) {
         userProfile.innerHTML += `
-        <i class="far fa-heart modal-heart active-heart fas" data-id='${id}'></i>
+        <i class="far fa-heart modal-heart active-heart fas btn-heart" data-id='${id}'></i>
         `
       } else {
         userProfile.innerHTML += `
-          <i class="far fa-heart modal-heart" data-id='${id}'></i>
+          <i class="far fa-heart modal-heart btn-heart" data-id='${id}'></i>
         `
       }
     })
@@ -112,15 +114,7 @@ function showUserModal(id) {
 dataPanel.addEventListener('click', function onPanelClick(event) {
   if (event.target.matches('.modal-trigger')) {
     showUserModal(event.target.dataset.id)
-  } else if (event.target.matches('.active-heart')) {
-    event.target.classList.toggle('active-heart')
-    event.target.classList.toggle('fas')
-    removeFavorite(Number(event.target.dataset.id))
-  } else if (event.target.matches('.btn-heart')) {
-    event.target.classList.toggle('active-heart')
-    event.target.classList.toggle('fas')
-    addToFavorite(Number(event.target.dataset.id))
-  }
+  } else heartDetect(event.target)
 })
 
 // 5.1 新增收藏清單 function
@@ -196,3 +190,31 @@ modeBox.addEventListener('click', function changeMode(event) {
   btnList.classList.remove('btn-mode-on')
   renderUsers(getArrByPage(currentPage), mode)
 })
+
+// 9.1 event click modal-heart sync with btn-heart
+userModal.addEventListener('click', function onModalClick(event) {
+  const target = event.target
+  if (!target.matches('.modal-heart')) return
+  // nodelist不能用find 先轉arr
+  const heartArray = Array.apply(null, heartList)
+  const user = heartArray.find(function (item) {
+    return item.dataset.id === target.dataset.id
+  })
+  user.classList.toggle('active-heart')
+  user.classList.toggle('fas')
+
+  heartDetect(target)
+})
+
+// 9.2 function 判斷heart
+function heartDetect(target) {
+  if (target.matches('.active-heart')) {
+    target.classList.toggle('active-heart')
+    target.classList.toggle('fas')
+    removeFavorite(Number(target.dataset.id))
+  } else if (target.matches('.btn-heart')) {
+    target.classList.toggle('active-heart')
+    target.classList.toggle('fas')
+    addToFavorite(Number(target.dataset.id))
+  }
+}

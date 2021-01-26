@@ -118,6 +118,7 @@
   background-color: rgba(0, 0, 0, 0);
   padding: 8px 7px 6px;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .list-heart:hover, .modal-heart:hover {
