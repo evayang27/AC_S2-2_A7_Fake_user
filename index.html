@@ -50,9 +50,15 @@
     </div>
   </nav>
 
-
+  <!-- btn box -->
   <div class="container mt-4">
     <div class="row justify-content-between px-3 mb-3">
+      <!-- gender filter bnt -->
+      <div class="ml-2" id="btn-gender-box">
+        <span class="btn-gender btn-gender-all btn-gender-on">All</span>
+        <span class="btn-gender btn-gender-male">Male</span>
+        <span class="btn-gender btn-gender-female">Female</span>
+      </div>
       <!-- change modal btn -->
       <div id="btn-mode-box" class="d-flex align-items-end">
         <i class="fas fa-th mr-2 btn-mode btn-mode-card btn-mode-on" id="btn-mode-card"></i>
@@ -60,8 +66,6 @@
       </div>
     </div>
   </div>
-
-
 
   <!-- data-panel -->
   <div class="container mt-1 mb-4">
@@ -75,7 +79,6 @@
 
   </ul>
 
-
   <!-- user modal -->
   <div class="modal fade" id="user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -85,7 +88,6 @@
             <img src="https://randomuser.me/api/portraits/men/88.jpg" class="rounded-circle modal-img" alt="avatar">
           </div>
         </div>
-
         <div class="modal-text-box" id="user-modal-text">
           <h4 class="modal-title">Guillaume Vincent</h4>
           <span class="email">guillaume.vincent@example.com</span>
@@ -94,13 +96,9 @@
           <span> <i class="fa fa-birthday-cake mr-1" aria-hidden="true"></i>
             1995-05-05</span>
         </div>
-
-
       </div>
     </div>
   </div>
-
-
 
   <!-- axios -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

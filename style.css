@@ -34,7 +34,7 @@
 }
 
 .bgc-style {
-  background: linear-gradient(to right, #360033, #0b8793);
+  background: linear-gradient(90deg, rgba(181, 185, 4, 1) 0%, rgba(14, 143, 215, 1) 27%, rgba(0, 186, 222, 1) 88%);
 }
 
 .modal-content {
@@ -271,4 +271,18 @@
   .modal-dialog {
     max-width: 540px;
   }
+}
+
+.page-link {
+  color: #00bade;
+}
+
+.page-link:hover {
+  color: #00bade;
+  background-color: rgba(29, 183, 218, .2);
+}
+
+.page-item.active .page-link {
+  background-color: #00bade;
+  border-color: #00bade;
 }

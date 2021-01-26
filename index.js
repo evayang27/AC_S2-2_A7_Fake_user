@@ -13,6 +13,7 @@ const modeBox = document.querySelector('#btn-mode-box')
 const btnCard = document.querySelector('#btn-mode-card')
 const btnList = document.querySelector('#btn-mode-list')
 const userModal = document.querySelector('#user-modal')
+const genderBtnBox = document.querySelector('#btn-gender-box')
 
 // 2.2 變數 set arr for user data
 const users = []
@@ -21,6 +22,7 @@ let filteredUsers = []
 let mode = 'card'
 let currentPage = 1
 let heartList
+let filteredGender = []
 
 // 3.1 function render user 同時判斷是否已加入收藏
 function renderUsers(data, modeVar) {
@@ -139,13 +141,15 @@ searchForm.addEventListener('submit', function searchSubmit(event) {
   filteredUsers = users.filter((user) => {
     return user.name.toLowerCase().includes(keyword) || user.surname.toLowerCase().includes(keyword)
   })
-  console.log(filteredUsers)
   if (filteredUsers.length === 0) {
     return alert('未找到符合資料')
   }
+  filteredGender = []
+
   currentPage = 1
   renderPaginator(filteredUsers.length)
   renderUsers(getArrByPage(currentPage), mode)
+  renderGenderBtn(document.querySelector('.btn-gender-all'))
 })
 
 // 7.1 function 分頁功能 render 頁數 計算總共需要幾頁
@@ -163,7 +167,12 @@ function renderPaginator(amount) {
 }
 // 7.2 function 分頁功能 得到每頁指定個數的arr 傳回renderUsers
 function getArrByPage(page) {
-  const data = filteredUsers.length ? filteredUsers : users
+  let data
+  if (filteredGender.length !== 0) {
+    data = filteredGender
+  } else {
+    data = filteredUsers.length ? filteredUsers : users
+  }
   const starIndex = (page - 1) * USER_PER_PAGE
   return data.slice(starIndex, starIndex + USER_PER_PAGE)
 }
@@ -217,4 +226,30 @@ function heartDetect(target) {
     target.classList.toggle('fas')
     addToFavorite(Number(target.dataset.id))
   }
+}
+
+// 10.1 event click btn-gender-filter
+genderBtnBox.addEventListener('click', function genderFilter(event) {
+  const data = filteredUsers.length ? filteredUsers : users
+  if (event.target.matches('.btn-gender-male')) {
+    filteredGender = data.filter(item => item.gender === 'male')
+  } else if (event.target.matches('.btn-gender-female')) {
+    filteredGender = data.filter(item => item.gender === 'female')
+  } else {
+    filteredGender = data
+  }
+  if (filteredGender.length === 0) {
+    return alert('未找到符合條件對象')
+  }
+  renderGenderBtn(event.target)
+  renderPaginator(filteredGender.length)
+  currentPage = 1
+  renderUsers(getArrByPage(currentPage), mode)
+})
+
+// 10.2 function render btn-gender-filter
+function renderGenderBtn(btn) {
+  const genderBtnList = document.querySelectorAll('.btn-gender')
+  genderBtnList.forEach((item) => { item.classList.remove('btn-gender-on') })
+  btn.classList.add('btn-gender-on')
 }
