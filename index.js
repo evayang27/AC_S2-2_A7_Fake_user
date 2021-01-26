@@ -86,7 +86,6 @@ axios
 
 // 4.1 show modal function
 function showUserModal(id) {
-  const userName = document.querySelector('#user-modal-name')
   const userImage = document.querySelector('#user-modal-img')
   const userProfile = document.querySelector('#user-modal-text')
 
@@ -94,16 +93,16 @@ function showUserModal(id) {
     .get(INDEX_URL + id)
     .then((response) => {
       const result = response.data
-      userName.innerText = result.name + ' ' + result.surname
       userImage.innerHTML = `<img src="${result.avatar}" class="rounded-circle modal-img" alt="avatar">`
       userProfile.innerHTML = `
-        Age : ${result.age}<br>
-        Region : ${result.region}<br>
-        Birthday : ${result.birthday}<br>
-        Email : ${result.email}
+        <h4 class="modal-title">${result.name} ${result.surname}</h4>
+          <span class="email">${result.email}</span>
+          <span> <i class="fas fa-map-marker-alt mr-1"></i></i>
+            ${result.region}</span>
+          <span> <i class="fa fa-birthday-cake mr-1" aria-hidden="true"></i>
+            ${result.birthday}</span> 
       `
     })
-
 }
 
 // 4.2 event 點擊card出現modal

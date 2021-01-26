@@ -194,7 +194,7 @@
   overflow: hidden;
   border-width: 10px 15px;
   border-style: solid;
-  border-color: #eb9921;
+  border-color: #00bade;
 }
 
 .modal-img-box {
@@ -209,7 +209,7 @@
   right: 0;
   transform: translate(0, -50%);
   border-radius: 50%;
-  border: 3px solid white;
+  border: 4px solid white;
 }
 
 .modal-frame {
@@ -220,9 +220,9 @@
   transform: translate(0, -50%);
   width: 100%;
   height: 134px;
-  background-color: #eb9921;
+  background-color: #00bade;
   border-radius: 0 77px 77px 0;
-  border: 10px solid #eb9921;
+  border: 10px solid #00bade;
 }
 
 .modal-title {
@@ -257,7 +257,7 @@
 }
 
 .modal-text-box span.email:hover {
-  color: #fda41e;
+  color: #00bade;
 }
 
 .modal-heart {
