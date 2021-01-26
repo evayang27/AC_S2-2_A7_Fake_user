@@ -286,3 +286,16 @@
   background-color: #00bade;
   border-color: #00bade;
 }
+
+.btn-modal-dismiss {
+  position: absolute;
+  top: 15px;
+  right: 27px;
+  color: #ddd;
+  font-size: 20px;
+  transition: .2s;
+}
+
+.btn-modal-dismiss:hover {
+  color: #bbb;
+}
